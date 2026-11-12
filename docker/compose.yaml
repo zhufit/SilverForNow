@@ -1,0 +1,29 @@
+name: beijing
+services:
+  nginx:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-80}:18080"
+    depends_on:
+      - journal
+    networks:
+      - beijing
+  journal:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - journal-data:/app/data
+    expose:
+      - "3000"
+    networks:
+      - beijing
+volumes:
+  journal-data:
+networks:
+  beijing:
+    driver: bridge

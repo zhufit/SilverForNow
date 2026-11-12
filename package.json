@@ -1,0 +1,1 @@
+{"name":"beijing-journal","private":true,"version":"1.0.0","scripts":{"start":"node server.cjs","check":"node --check server.cjs && node --check app.js && node --check sync.js"},"engines":{"node":">=22"}}

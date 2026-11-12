@@ -1,0 +1,15 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync('app.js','utf8');
+const fn=source.slice(source.indexOf('function eventBackgroundProgress('),source.indexOf('let layoutMetrics='));
+const context={};vm.createContext(context);vm.runInContext(fn,context);
+const parent={offsetTop:800,offsetParent:null};
+const rows=Array.from({length:15},(_,i)=>({offsetTop:i*90,offsetHeight:90,offsetParent:parent}));
+const progress=y=>context.eventBackgroundProgress(rows,y,4);
+assert.equal(progress(700),0);
+assert.equal(progress(800+3*90),.25);
+assert.equal(progress(800+6*90),.5);
+assert.equal(progress(800+12*90),1);
+assert.equal(progress(2400),1);
+const expanded=[{offsetTop:0,offsetHeight:180,offsetParent:parent},{offsetTop:180,offsetHeight:90,offsetParent:parent},{offsetTop:270,offsetHeight:90,offsetParent:parent}];
+assert.equal(context.eventBackgroundProgress(expanded,1160,4),.25);
+console.log('PASS: portrait event intervals, expanded details, document offsets and bounds');
