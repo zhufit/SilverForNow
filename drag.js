@@ -48,10 +48,40 @@ function bindDrag(text,row,lane,item){
     render();
     if(commit){const placed=list().children[targetIndex];placed?.classList.add('just-dropped');setTimeout(()=>placed?.classList.remove('just-dropped'),450)}
   }
-  text.addEventListener('touchstart',e=>{if(e.touches.length===1)begin(e.touches[0].clientX,e.touches[0].clientY);else finish(false)},{passive:true});
-  text.addEventListener('touchmove',e=>{if(active)e.preventDefault();if(e.touches.length===1)update(e.touches[0].clientX,e.touches[0].clientY)},{passive:false});
-  text.addEventListener('touchend',e=>{if(active)e.preventDefault();finish(true)},{passive:false});
-  text.addEventListener('touchcancel',()=>finish(false));
+  let touchId=null,touchScrolling=false,touchLastY=0;
+  text.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1){touchId=null;finish(false);return}
+    // Leave native selection and caret movement available while editing.
+    if(document.activeElement===text)return;
+    // Cancel native textarea selection before the browser claims the hold.
+    // Since this also cancels native scrolling, forward early swipes below.
+    e.preventDefault();
+    const touch=e.touches[0];touchId=touch.identifier;
+    touchScrolling=false;touchLastY=touch.clientY;
+    begin(touch.clientX,touch.clientY);
+  },{passive:false});
+  text.addEventListener('touchmove',e=>{
+    if(touchId===null)return;
+    if(e.touches.length!==1){touchId=null;finish(false);return}
+    const touch=[...e.touches].find(t=>t.identifier===touchId);
+    if(!touch)return;
+    e.preventDefault();
+    if(!active&&(touchScrolling||Math.hypot(touch.clientX-startX,touch.clientY-startY)>10)){
+      clearTimeout(timer);
+      window.scrollBy({top:(touchScrolling?touchLastY:startY)-touch.clientY,behavior:'instant'});
+      touchScrolling=true;
+    }else update(touch.clientX,touch.clientY);
+    touchLastY=touch.clientY;
+  },{passive:false});
+  text.addEventListener('touchend',e=>{
+    if(touchId===null)return;
+    if(![...e.changedTouches].some(t=>t.identifier===touchId))return;
+    e.preventDefault();
+    const edit=!active&&!touchScrolling;
+    touchId=null;finish(true);
+    if(edit){text.focus();text.setSelectionRange(text.value.length,text.value.length)}
+  },{passive:false});
+  text.addEventListener('touchcancel',()=>{touchId=null;finish(false)});
   text.addEventListener('pointerdown',e=>{
     if(e.pointerType==='touch'||e.button!==0)return;
     // Prevent the textarea's native text-selection gesture from taking over.

@@ -1,4 +1,4 @@
-name: beijing
+name: silverfornow
 services:
   nginx:
     build:
@@ -10,7 +10,7 @@ services:
     depends_on:
       - journal
     networks:
-      - beijing
+      - silverfornow
   journal:
     build:
       context: ..
@@ -21,9 +21,9 @@ services:
     expose:
       - "3000"
     networks:
-      - beijing
+      - silverfornow
 volumes:
   journal-data:
 networks:
-  beijing:
+  silverfornow:
     driver: bridge

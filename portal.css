@@ -1,0 +1,44 @@
+.portal-header{height:auto;min-height:76px;position:sticky;top:0;z-index:30;padding:12px max(6vw,20px);display:flex;flex-wrap:nowrap;gap:20px;align-items:center;justify-content:flex-start;background:transparent;color:#d8d0c3;border:0;backdrop-filter:none}
+.portal-brand{display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;color:inherit;border-radius:50%}
+.portal-brand svg{display:block}
+.portal-header nav{display:flex;gap:8px;max-width:100%;overflow-x:auto;font-size:14px}
+.portal-header nav a{display:block;padding:10px 12px;white-space:nowrap;color:inherit;opacity:.7;border-bottom:1px solid transparent}
+.portal-header nav a[aria-current]{opacity:1;border-bottom-color:currentColor}
+.portal-header nav a:hover,.portal-brand:hover{opacity:1;color:#b89862}
+.portal-header a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+.tab-frame{position:fixed;inset:0;display:block;width:100%;height:100%;border:0;z-index:1;background:#dce2e9;visibility:hidden;pointer-events:none}
+.portal-home{margin:0;background:#dce2e9;color:#3e5362;font:15px/1.65 system-ui,-apple-system,"Microsoft YaHei",sans-serif}
+.portal-home *{box-sizing:border-box}
+.portal-home a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.portal-home .portal-header{position:absolute;inset:0 0 auto;color:#3e5362}
+.portal-main{margin:0;padding:0}
+.portal-intro{position:relative;isolation:isolate;height:100vh;height:100svh;min-height:420px;overflow:hidden;scroll-margin-top:0}
+.home-cover-art{position:absolute;inset:0;z-index:-1;display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.home-cover-copy{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;pointer-events:none;transform:translateY(clamp(24px,4svh,40px))}
+.portal-intro h1{font-family:Georgia,"Songti SC","SimSun",serif;font-size:clamp(36px,4.5vw,64px);font-weight:400;letter-spacing:.2em;line-height:1.7;margin:0;color:#fff;text-shadow:0 2px 16px #25384766}
+.portal-intro h1 span{display:block}
+.cover-loading .home-cover-art{opacity:0}
+.swipe-guide{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;align-items:center;justify-content:center;margin:0;padding:8px 20px;color:#fff;pointer-events:none}
+.swipe-guide-arrow{display:block;filter:drop-shadow(0 1px 4px #25384780)}
+.swipe-guide{animation:cover-words .5s ease-out .2s both}
+.swipe-guide-arrow{animation:guide-swipe 1.8s ease-in-out .7s 3}
+.cover-loader{position:absolute;top:50%;left:50%;width:24px;height:24px;margin:-12px;border:1px solid #607d8b40;border-top-color:#607d8b;border-radius:50%;animation:cover-spin 1s linear infinite}
+.cover-ready .home-cover-art{animation:cover-arrive .35s ease-out both}
+.cover-cached .home-cover-art{animation:none}
+.home-cover-copy h1 span{animation:cover-words .5s ease-out both}
+.home-cover-copy h1 span+span{animation-delay:.1s}
+@keyframes cover-spin{to{transform:rotate(360deg)}}
+@keyframes cover-arrive{from{opacity:0;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
+@keyframes cover-words{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes guide-swipe{0%,100%{transform:translateX(0);opacity:.8}50%{transform:translateX(-7px);opacity:1}}
+@media(max-width:600px){
+  .portal-header{min-height:65px;padding:10px 18px;gap:12px}
+  .portal-header nav{gap:4px;font-size:14px}
+  .portal-header nav a{padding:10px 12px}
+  .portal-intro{min-height:0;height:100svh}
+  .portal-intro h1{font-size:clamp(32px,9vw,44px);letter-spacing:.16em;line-height:1.65;text-shadow:0 2px 14px #25384780}
+  .home-cover-copy{inset:clamp(100px,14svh,150px) 0 auto;display:block;padding:0 20px}
+  /* The dedicated portrait illustration leaves sky above the complete group. */
+  .home-cover-art{object-fit:cover;object-position:50% 50%}
+}
+@media(prefers-reduced-motion:reduce){.cover-ready .home-cover-art,.home-cover-copy h1 span,.swipe-guide,.swipe-guide-arrow,.cover-loader{animation:none}}

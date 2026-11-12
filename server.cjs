@@ -12,8 +12,8 @@ let state={data:stored.data,updatedAt:stored.updatedAt||null};
 const sessions=new Map(),attempts=new Map();
 function valid(data){return data&&['food','place'].every(k=>Array.isArray(data[k])&&data[k].length<=1000&&data[k].every(x=>x&&typeof x.title==='string'&&x.title.length<=200&&typeof x.done==='boolean'&&(x.date===undefined||typeof x.date==='string'&&(!x.date||/^\d{4}-\d{2}-\d{2}$/.test(x.date)))&&(x.details===undefined||typeof x.details==='string'&&x.details.length<=4000)))}
 if(state.data!==null&&!valid(state.data))throw Error('Invalid journal file; restore a backup before starting.');
-const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml'};
-const allowed=new Set(['index.html','style.css','background.css','app.js','drag.js','calendar.js','sync.js','scenes.js','cover.svg','sw.js']);
+const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'};
+const allowed=new Set(['index.html','beijing.html','portal.css','portal.js','style.css','background.css','app.js','drag.js','calendar.js','sync.js','scenes.js','cover.svg','sw.js']);
 function json(res,status,value){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value))}
 function read(req){return new Promise((resolve,reject)=>{let bytes=0,chunks=[];req.on('data',chunk=>{bytes+=chunk.length;if(bytes>12000000){reject(Error('too large'));req.destroy()}else chunks.push(chunk)});req.on('end',()=>{try{resolve(JSON.parse(Buffer.concat(chunks).toString()))}catch{reject(Error('invalid JSON'))}});req.on('error',reject)})}
 function samePassword(input){const hash=v=>crypto.createHash('sha256').update(v).digest();return typeof input==='string'&&crypto.timingSafeEqual(hash(input),hash(password))}
@@ -21,8 +21,15 @@ const server=http.createServer(async(req,res)=>{
   res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','same-origin');
   try{
     const url=new URL(req.url,'http://localhost');
-    if(url.pathname==='/beijing'){res.writeHead(308,{Location:'/beijing/'});return res.end()}
+    // Support the Docker deployment prefix and direct local hosting.
+    const prefix=url.pathname==='/livenow'||url.pathname.startsWith('/livenow/')?'/livenow':'';
+    if(url.pathname===prefix&&prefix){res.writeHead(308,{Location:prefix+'/'});return res.end()}
+    if(prefix)url.pathname=url.pathname.slice(prefix.length);
+    if(url.pathname==='/beijing'){res.writeHead(308,{Location:prefix+'/beijing/'});return res.end()}
+    const beijing=url.pathname.startsWith('/beijing/');
     if(url.pathname.startsWith('/beijing/'))url.pathname=url.pathname.slice('/beijing'.length);
+    // Keep the chapter's relative asset base canonical.
+    if(url.pathname==='/beijing.html'){res.writeHead(308,{Location:prefix+'/beijing/'});return res.end()}
     if(url.pathname.startsWith('/api/')){
       // All mutation requests come from our same-origin JSON client.
       if(req.method!=='GET'&&(!/^application\/json\b/.test(req.headers['content-type']||'')||(req.headers.origin&&req.headers.origin!==`${req.headers['x-forwarded-proto']==='https'?'https':'http'}://${req.headers.host}`)))return json(res,403,{error:'origin'});
@@ -49,10 +56,15 @@ const server=http.createServer(async(req,res)=>{
       return json(res,404,{error:'not found'});
     }
     if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'method'});
-    const name=decodeURIComponent(url.pathname).replace(/^\//,'')||'index.html';
-    if(!allowed.has(name)&&!/^assets\/mobile\/(cover|palace|hutong|lake|temple|wall)\.svg$/.test(name))return json(res,404,{error:'not found'});
+    let name=decodeURIComponent(url.pathname).replace(/^\//,'')||'index.html';
+    if(beijing&&name==='index.html')name='beijing.html';
+    const fingerprinted=/^assets\/home-cover(?:-mobile)?\.[a-f0-9]{10}\.webp$/.test(name);
+    if(!allowed.has(name)&&!fingerprinted&&!['assets/home-cover.svg','assets/home-cover.png'].includes(name)&&!/^assets\/mobile\/(cover|palace|hutong|lake|temple|wall)\.svg$/.test(name))return json(res,404,{error:'not found'});
     const target=path.join(root,name);if(!fs.existsSync(target))return json(res,404,{error:'not found'});
-    res.writeHead(200,{'Content-Type':mime[path.extname(name)]||'application/octet-stream','Cache-Control':'no-cache'});
+    const stat=fs.statSync(target),etag=`W/"${stat.size}-${stat.mtimeMs}"`;
+    const headers={'Content-Type':mime[path.extname(name)]||'application/octet-stream','Cache-Control':fingerprinted?'public, max-age=31536000, immutable':'no-cache','ETag':etag};
+    if(req.headers['if-none-match']===etag){res.writeHead(304,headers);return res.end()}
+    res.writeHead(200,{...headers,'Content-Length':stat.size});
     if(req.method==='HEAD')res.end();else fs.createReadStream(target).pipe(res);
   }catch(error){if(!res.headersSent)json(res,500,{error:'request failed'});else res.end();console.error(error.message)}
 });
