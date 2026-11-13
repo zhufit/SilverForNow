@@ -13,7 +13,7 @@ async function run(){
    const origin='http://127.0.0.1:31879'+prefix;
    if(prefix){const entry=await fetch(origin,{redirect:'manual'});assert.equal(entry.status,308);assert.equal(entry.headers.get('location'),prefix+'/')}
    const home=await fetch(origin+'/');assert.equal(home.status,200);
-   const cover=await home.text();assert.match(cover,/人生三万天<\/span><span>碎银换今朝/);assert.doesNotMatch(cover,/chapter-grid|<footer|home-cover-next|home-cover\.png|href="style.css"/);
+   const cover=await home.text();assert.match(cover,/id="portal-title"><span>碎银换今朝<\/span><\/h1>/);assert.doesNotMatch(cover,/人生三万天|chapter-grid|<footer|home-cover-next|home-cover\.png|href="style.css"/);
    const coverAsset=cover.match(/assets\/home-cover\.[a-f0-9]{10}\.webp/)[0];
    const mobileAsset=cover.match(/assets\/home-cover-mobile\.[a-f0-9]{10}\.webp/)[0];
    assert.match(cover,/<source media="\(max-width: 600px\)" srcset="assets\/home-cover-mobile\./);

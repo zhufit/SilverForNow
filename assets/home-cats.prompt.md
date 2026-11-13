@@ -1,0 +1,7 @@
+# Minimal cats homepage illustration
+
+Generated with the built-in image_gen tool, using `assets/home-cover.png` as the identity reference. Source: `assets/home-cats.png`. Transparent WebP variants retain both complete cats and are displayed over a solid cream CSS background.
+
+Final prompt:
+
+Use case: style-transfer. Asset type: isolated illustration for a minimalist website homepage. Reference image is the existing cover. Completely redraw ONLY its two cats as beautifully simple, clean flat graphic shapes. Exactly two cats sitting together, touching gently, front facing, full bodies, ears and curled tails fully visible. Left: stocky round solid blue-gray British shorthair, warm amber eyes. Right: white-bodied gray-brown tabby, white nose blaze, white muzzle/chest/front paws, green eyes, only a few bold dark tabby stripes. Preserve these two cat identities. Substantially simplify: confident broad curves, solid matte color fills, minimal facial features, restrained 5-7 color palette, contemporary Japanese flat editorial mascot illustration, affectionate and quiet, elegant rather than busy. Center the pair as a unified compact composition, approximately square bounding box, with all paws visible and tails wrapping toward them. Transparent background. NO people, scenery, flowers, branches, snow, furniture, objects, ground shadows, gradients, textures, fur detail, typography, borders, watermarks or additional decorative elements. This is an image asset only; all title text is supplied separately in HTML.

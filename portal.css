@@ -7,19 +7,26 @@
 .portal-header nav a:hover,.portal-brand:hover{opacity:1;color:#b89862}
 .portal-header a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
 .tab-frame{position:fixed;inset:0;display:block;width:100%;height:100%;border:0;z-index:1;background:#dce2e9;visibility:hidden;pointer-events:none}
-.portal-home{margin:0;background:#dce2e9;color:#3e5362;font:15px/1.65 system-ui,-apple-system,"Microsoft YaHei",sans-serif}
+.portal-home{margin:0;background:#f1eee6;color:#526159;font:15px/1.65 system-ui,-apple-system,"Microsoft YaHei",sans-serif}
 .portal-home *{box-sizing:border-box}
 .portal-home a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
-.portal-home .portal-header{position:absolute;inset:0 0 auto;color:#3e5362}
+.portal-home .portal-header{position:absolute;inset:0 0 auto;color:#526159}
 .portal-main{margin:0;padding:0}
 .portal-intro{position:relative;isolation:isolate;height:100vh;height:100svh;min-height:420px;overflow:hidden;scroll-margin-top:0}
-.home-cover-art{position:absolute;inset:0;z-index:-1;display:block;width:100%;height:100%;object-fit:cover;object-position:center}
-.home-cover-copy{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;pointer-events:none;transform:translateY(clamp(24px,4svh,40px))}
-.portal-intro h1{font-family:Georgia,"Songti SC","SimSun",serif;font-size:clamp(36px,4.5vw,64px);font-weight:400;letter-spacing:.2em;line-height:1.7;margin:0;color:#fff;text-shadow:0 2px 16px #25384766}
+.home-cover-visual{position:absolute;top:43%;bottom:14%;left:50%;width:min(40vw,460px);transform:translateX(-50%);z-index:0}
+.home-cover-art{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom}
+.home-cover-copy{position:absolute;inset:24% 0 auto;padding:0 24px;text-align:center;pointer-events:none}
+.portal-intro h1{font-family:Georgia,"Songti SC","SimSun",serif;font-size:clamp(36px,3.6vw,52px);font-weight:400;letter-spacing:.2em;line-height:1.7;margin:0;color:#526159;text-shadow:none}
 .portal-intro h1 span{display:block}
+.life-progress{width:min(240px,56vw);margin:22px auto 0}
+.life-progress progress{appearance:none;-webkit-appearance:none;display:block;width:100%;height:3px;overflow:hidden;border:0;border-radius:2px;background:#52615924;color:#82978a}
+.life-progress progress::-webkit-progress-bar{background:#52615924;border-radius:2px}
+.life-progress progress::-webkit-progress-value{background:#82978a;border-radius:2px}
+.life-progress progress::-moz-progress-bar{background:#82978a;border-radius:2px}
+.life-progress p{margin:10px 0 0;color:#7a887f;font-size:11px;line-height:1.6;letter-spacing:.06em;font-variant-numeric:tabular-nums}
 .cover-loading .home-cover-art{opacity:0}
-.swipe-guide{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;align-items:center;justify-content:center;margin:0;padding:8px 20px;color:#fff;pointer-events:none}
-.swipe-guide-arrow{display:block;filter:drop-shadow(0 1px 4px #25384780)}
+.swipe-guide{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;align-items:center;justify-content:center;margin:0;padding:8px 20px;color:#819087;pointer-events:none}
+.swipe-guide-arrow{display:block}
 .swipe-guide{animation:cover-words .5s ease-out .2s both}
 .swipe-guide-arrow{animation:guide-swipe 1.8s ease-in-out .7s 3}
 .cover-loader{position:absolute;top:50%;left:50%;width:24px;height:24px;margin:-12px;border:1px solid #607d8b40;border-top-color:#607d8b;border-radius:50%;animation:cover-spin 1s linear infinite}
@@ -36,9 +43,14 @@
   .portal-header nav{gap:4px;font-size:14px}
   .portal-header nav a{padding:10px 12px}
   .portal-intro{min-height:0;height:100svh}
-  .portal-intro h1{font-size:clamp(32px,9vw,44px);letter-spacing:.16em;line-height:1.65;text-shadow:0 2px 14px #25384780}
-  .home-cover-copy{inset:clamp(100px,14svh,150px) 0 auto;display:block;padding:0 20px}
-  /* The dedicated portrait illustration leaves sky above the complete group. */
-  .home-cover-art{object-fit:cover;object-position:50% 50%}
+  .portal-intro h1{font-size:clamp(30px,8.5vw,40px);letter-spacing:.16em;line-height:1.65;text-shadow:none}
+  .home-cover-copy{inset:23% 0 auto;padding:0 20px}
+  .home-cover-visual{top:43%;bottom:17%;width:min(78vw,400px)}
 }
 @media(prefers-reduced-motion:reduce){.cover-ready .home-cover-art,.home-cover-copy h1 span,.swipe-guide,.swipe-guide-arrow,.cover-loader{animation:none}}
+@media(max-height:500px) and (orientation:landscape){
+ .home-cover-copy{inset:20% 0 auto}
+ .portal-intro h1{font-size:clamp(24px,6vh,30px);line-height:1.45}
+ .life-progress{margin-top:12px}
+ .life-progress p{margin-top:7px}
+}
