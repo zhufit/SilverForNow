@@ -65,4 +65,4 @@ data/                           # 本地运行时数据，不提交；Docker 使
 4. 运行 `npm run cache` 更新离线资源清单，并递增 `public/sw.js` 的缓存版本。
 5. 运行语法检查与回归测试。Docker 自动复制 `public/` 和 `server/`，无需逐个维护新增资源文件名。
 
-修改搬家矢量插画后可运行 `npm run assets:moving`，从该页配置重新生成桌面与手机封面。修改首页图片时使用新的内容指纹文件名，同时更新首页引用和离线清单；生成提示词见 `design/home/home-cats.prompt.md`。
+修改搬家矢量插画后可运行 `npm run assets:moving`，生成桌面与手机插画：`cover*.svg` 为独立的打包启程封面，`room*.svg` 从该页配置生成首张房间背景。新增图片后运行 `npm run cache` 并更新 Service Worker 缓存版本。修改首页图片时使用新的内容指纹文件名，同时更新首页引用和离线清单；生成提示词见 `design/home/home-cats.prompt.md`。

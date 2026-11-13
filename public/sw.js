@@ -1,4 +1,4 @@
-const CACHE='silverfornow-v94';
+const CACHE='silverfornow-v95';
 // Previously installed chapter-scoped workers must also load the new portal.
 const base=new URL(/\/(beijing|moving)\/sw\.js$/.test(self.location.pathname)?'../':'./',self.location.href);
 importScripts(new URL('shared/precache.js',base).href);

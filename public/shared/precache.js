@@ -21,6 +21,8 @@ const PRECACHE_URLS=[
   "./pages/home/home.js",
   "./pages/moving/assets/cover-mobile.svg",
   "./pages/moving/assets/cover.svg",
+  "./pages/moving/assets/room-mobile.svg",
+  "./pages/moving/assets/room.svg",
   "./pages/moving/config.js",
   "./pages/moving/theme.css",
   "./shared/chapters.js",
