@@ -1,6 +1,6 @@
 FROM node:22-alpine
 WORKDIR /app
-COPY package.json server.cjs app.js sync.js calendar.js drag.js scenes.js sw.js index.html beijing.html portal.js portal.css style.css background.css cover.svg ./
+COPY package.json server.cjs app.js sync.js calendar.js drag.js scenes.js sw.js index.html beijing.html moving.html moving.js moving.css portal.js portal.css style.css background.css cover.svg ./
 COPY assets ./assets
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node

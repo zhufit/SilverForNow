@@ -1,7 +1,8 @@
 // Browser-local edits remain usable when the shared server is unreachable.
 (()=>{
   if(location.protocol==='file:')return;
-  const metaKey='beijing-sync-v1';
+  const metaKey=journalConfig.syncKey||'beijing-sync-v1';
+  const endpoint=journalConfig.endpoint||'./api/journal';
   let meta={dirty:false},busy=false,timer,edit=0;
   try{meta=Object.assign(meta,JSON.parse(localStorage.getItem(metaKey)||'{}'))}catch{}
   const bar=document.createElement('div');bar.className='sync-bar';
@@ -16,7 +17,7 @@
     if(busy)return;
     busy=true;
     try{
-      const response=await fetch('./api/journal',{cache:'no-store'});
+      const response=await fetch(endpoint,{cache:'no-store'});
       if(!response.ok)throw Error('连接失败');
       const remote=await response.json();
       if(remote.data!==null&&!valid(remote.data))throw Error('服务器数据无效');
@@ -27,7 +28,7 @@
       if(!remote.data){meta.dirty=true;persist()}
       if(meta.dirty){
         const version=edit;
-        const result=await fetch('./api/journal',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({data})});
+        const result=await fetch(endpoint,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({data})});
         if(!result.ok)throw Error('保存失败');
         meta.dirty=edit!==version;persist();
         message.textContent=meta.dirty?'修改待同步':'已保存到服务器';

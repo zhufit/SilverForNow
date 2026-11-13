@@ -1,0 +1,43 @@
+/* A warm home, sage walls, terracotta packing boxes and soft plum accents. */
+:root{--paper:#e9e1d3;--ink:#f3ede1;--red:#bd8c74;--teal:#8fa68f;--line:#d8c8b64d;--timeline-red:#c4b7ca;--palace-gold:#e5d9c6}
+.moving-chapter{background:#65786c}
+.moving-chapter .cover:before{background-image:linear-gradient(180deg,#293b3866,#293b3840 65%,#293b3800),url('./assets/moving/cover.svg')}
+.moving-chapter .cover-content,.moving-chapter .cover-date{color:#f3ede1}
+.moving-chapter .global-backdrop{background:#8b9185}
+.moving-chapter .global-backdrop>.scene{display:block;left:0;width:100%;background:url('./assets/moving/cover.svg') center/cover no-repeat}
+.moving-chapter .global-backdrop>.scene>path{display:none}
+.moving-chapter .scenic-layer{background-image:none}
+.moving-chapter .scenic-layer svg{display:block}
+.moving-chapter .backdrop-veil{background:linear-gradient(180deg,#243a355c,#243a358c 60%,#243a357a)}
+.moving-chapter .backdrop-teal{background:linear-gradient(155deg,#b7baa3a0,#617d6bb0);opacity:var(--teal-opacity,0)}
+.moving-chapter .lane-title h2{color:#f0c9b4}
+.moving-chapter .lane:last-child .lane-title h2{color:#e2d0e9}
+.moving-chapter .lane-title,.moving-chapter .card{border-bottom-color:#e5d9c64d}
+.moving-chapter .card .title,.moving-chapter .item-details{color:#f5eee3}
+.moving-chapter .card .title::placeholder,.moving-chapter .item-details::placeholder{color:#dfd7c6b8}
+.moving-chapter .done .title{color:#c0c5b5;text-decoration-color:#c0c5b5}
+.moving-chapter .item-date.calendar-trigger,.moving-chapter .actions button{color:#e5d9c6}
+.moving-chapter .axis:before{background:#e5d9c64d}
+.moving-chapter .axis:after{background:#c4b7ca}
+.moving-chapter .check:before{border-color:#cfdbc6;background:#30443833;box-shadow:none}
+.moving-chapter .done .check:before{background:#bdcdb4;border-color:#bdcdb4}
+.moving-chapter .done .check{color:#304438}
+.moving-chapter .card:focus-within{border-bottom-color:#c4b7ca}
+.moving-chapter .card .title:focus-visible{box-shadow:0 1px 0 #c4b7ca99}
+.moving-chapter .lane .add,.moving-chapter .lane:last-child .add{color:#dfd6c8}
+.moving-chapter .lane .add:hover,.moving-chapter .actions button:hover{color:#fff3df}
+.moving-chapter .sync-bar{color:#e4ddcfe0}
+.moving-chapter .sync-bar button{color:#d5ddcb;border-color:#d5ddcb80}
+.moving-chapter .calendar-panel{color:#3d4c42}
+.moving-chapter .calendar-popover .calendar-panel{background:#f0ebdfee;border-color:#8fa68f99}
+.moving-chapter .calendar-grid button.selected,.moving-chapter .calendar-months button.selected{background:#65786c;color:#fff}
+.moving-chapter .calendar-header>button,.moving-chapter .calendar-footer button,.moving-chapter .calendar-month-trigger{color:#526a59}
+.moving-chapter .calendar-month-trigger{background:#65786c15}
+.moving-chapter .calendar-panel :focus-visible{outline-color:#65786c}
+.moving-chapter .card.drag-ghost{background:#43594ee8;border-color:#c4b7ca80}
+@media(max-width:900px) and (orientation:portrait){
+ .moving-chapter .global-backdrop>.scene{background-image:url('./assets/moving/cover-mobile.svg')}
+ .moving-chapter .cover:before{background-image:linear-gradient(#293b3866,#293b382b),url('./assets/moving/cover-mobile.svg')}
+ .moving-chapter .scenic-layer svg{display:block}
+ .moving-chapter .lane-title h2,.moving-chapter .lane:last-child .lane-title h2{font-size:clamp(19px,5.7vw,26px);letter-spacing:0}
+}

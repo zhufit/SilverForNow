@@ -1,5 +1,5 @@
 // Each entry adds a chapter to the navigation.
-const chapters=[{id:'beijing',title:'北京篇',navTitle:'北京',href:'beijing/'}];
+const chapters=[{id:'beijing',title:'北京篇',navTitle:'北京',href:'beijing/'},{id:'moving',title:'搬家',navTitle:'搬家',href:'moving/',color:'#e4d9cd'}];
 
 function bindTabSwipe(pages,index,view,host){
   let gesture=null;
@@ -188,7 +188,7 @@ function createTabHost(pages,start,header,onSelect){
     header.append(brand,nav);document.body.prepend(header);
     const select=active=>{
       links.forEach((link,i)=>{if(i===active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
-      header.style.color=active===0?'#3e5362':'#d8d0c3';
+      header.style.color=active===0?'#3e5362':chapters[active-1].color||'#d8d0c3';
       document.title=active===0?'人生三万天 · 碎银换今朝':pages[active].title+'篇 · 碎银换今朝';
     };
     const boot=()=>{

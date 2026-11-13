@@ -1,1 +1,1 @@
-{"name":"silverfornow","private":true,"version":"1.0.0","scripts":{"start":"node server.cjs","check":"node --check server.cjs && node --check app.js && node --check sync.js && node --check portal.js && node --check drag.js && node --check sw.js"},"engines":{"node":">=22"}}
+{"name":"silverfornow","private":true,"version":"1.0.0","scripts":{"start":"node server.cjs","check":"node --check server.cjs && node --check app.js && node --check sync.js && node --check portal.js && node --check drag.js && node --check moving.js && node --check sw.js"},"engines":{"node":">=22"}}

@@ -1,7 +1,8 @@
 let metricsDirty=true;
 function resizeTitle(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';metricsDirty=true}
-const key='beijing-journal-v1';
-const initial={food:['吃一顿热气腾腾的涮羊肉','去胡同里，找一碗炸酱面','尝尝刚出炉的北京烤鸭'],place:['等一场故宫的雪','登上景山，看一眼紫禁城','沿着什刹海，慢慢走']};
+const journalConfig=window.journalConfig||{};
+const key=journalConfig.key||'beijing-journal-v1';
+const initial=journalConfig.initial||{food:['吃一顿热气腾腾的涮羊肉','去胡同里，找一碗炸酱面','尝尝刚出炉的北京烤鸭'],place:['等一场故宫的雪','登上景山，看一眼紫禁城','沿着什刹海，慢慢走']};
 let data=Object.fromEntries(Object.entries(initial).map(([k,v])=>[k,v.map(title=>({title,done:false}))]));
 const status=document.querySelector('#status');
 const backToTimeline=document.createElement('button');
@@ -11,7 +12,7 @@ backToTimeline.onclick=()=>document.getElementById('journey').scrollIntoView({be
 document.getElementById('journey').append(backToTimeline);
 document.querySelectorAll('[data-add]').forEach(button=>{
   button.textContent='+';
-  button.setAttribute('aria-label',button.dataset.add==='food'?'新增美食':'新增景点');
+  button.setAttribute('aria-label',journalConfig.addLabels?.[button.dataset.add]||(button.dataset.add==='food'?'新增美食':'新增景点'));
   button.title=button.getAttribute('aria-label');
 });
 function valid(d){return d&&['food','place'].every(k=>Array.isArray(d[k])&&d[k].length<=1000&&d[k].every(x=>x&&typeof x.title==='string'&&x.title.length<=200&&typeof x.done==='boolean'))}
@@ -131,26 +132,27 @@ backdrop.append(document.querySelector('.scene'));
 const sceneLayers=[];
 const scenesReady=document.createElement('script');
 scenesReady.src='./scenes.js';
-scenesReady.onload=()=>{
-  window.beijingScenes.forEach((scene,i)=>{
+function loadScenes(scenes){
+  scenes.forEach((scene,i)=>{
     const layer=document.createElement('div');
     layer.className='scenic-layer';
     layer.dataset.scene=['hutong','lake','temple','wall'][i];
     layer.innerHTML=`<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="scene-sky-${i}" x2="0" y2="1"><stop stop-color="${scene.sky[0]}"/><stop offset="1" stop-color="${scene.sky[1]}"/></linearGradient></defs><path fill="url(#scene-sky-${i})" d="M0 0h1440v900H0z"/>${scene.art}</svg>`;
-    backdrop.insertBefore(layer,backdrop.querySelector('.backdrop-snow'));
+    backdrop.insertBefore(layer,backdrop.querySelector('.backdrop-snow,.backdrop-teal'));
     sceneLayers.push(layer);
   });
   fitBackgrounds();
   scrollEffect();
-};
-document.head.append(scenesReady);
-for(const name of ['snow','teal','veil']){const layer=document.createElement('div');layer.className='backdrop-'+name;backdrop.append(layer)}
+}
+scenesReady.onload=()=>loadScenes(window.beijingScenes);
+if(!journalConfig.scenes)document.head.append(scenesReady);
+for(const name of (journalConfig.snow===false?['teal','veil']:['snow','teal','veil'])){const layer=document.createElement('div');layer.className='backdrop-'+name;backdrop.append(layer)}
 document.body.prepend(backdrop);
 function fitBackgrounds(){
   const viewportHeight=backdrop.clientHeight||innerHeight;
   const portrait=innerWidth<=900&&viewportHeight>innerWidth;
   const svgs=[backdrop.querySelector('.scene'),...sceneLayers.map(layer=>layer.querySelector('svg'))];
-  const focalPoints=[1050,720,880,1010,900];
+  const focalPoints=journalConfig.focalPoints||[1050,720,880,1010,900];
   svgs.forEach((svg,i)=>{
     if(!svg)return;
     const baseHeight=i===0?800:900;
@@ -165,12 +167,14 @@ function fitBackgrounds(){
   });
 }
 fitBackgrounds();
+if(journalConfig.scenes)queueMicrotask(()=>loadScenes(journalConfig.scenes));
 let backgroundWidth=innerWidth;
 addEventListener('resize',()=>{
   // Mobile address-bar changes only alter height; retain the composition.
   if(innerWidth!==backgroundWidth){backgroundWidth=innerWidth;fitBackgrounds()}
 });
 addEventListener('orientationchange',()=>requestAnimationFrame(fitBackgrounds));
+if(journalConfig.snow!==false){
 const snowfall=document.createElement('div');
 snowfall.className='snowfall';
 snowfall.setAttribute('aria-hidden','true');
@@ -191,6 +195,7 @@ for(let i=0;i<56;i++){
 }
 backdrop.append(snowfall);
 document.addEventListener('visibilitychange',()=>{snowfall.classList.toggle('paused',document.hidden)});
+}
 let ticking=false;
 let displayedSceneProgress=0,sceneTarget=0,sceneFrame=0,sceneLastTime=0;
 const reducedBackgroundMotion=matchMedia('(prefers-reduced-motion: reduce)');

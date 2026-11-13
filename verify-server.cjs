@@ -20,6 +20,10 @@ async function run(){
    const chapter=await fetch(origin+'/beijing/');assert.equal(chapter.status,200);
    const html=await chapter.text();assert.match(html,/<base href="\.\.\/">/);assert.match(html,/id="food"/);assert.match(html,/portal.js/);
    const redirect=await fetch(origin+'/beijing',{redirect:'manual'});assert.equal(redirect.headers.get('location'),prefix+'/beijing/');
+   const moving=await fetch(origin+'/moving/');assert.equal(moving.status,200);
+   const movingHTML=await moving.text();assert.match(movingHTML,/2026年11月14日/);assert.match(movingHTML,/2026年11月17日/);assert.match(movingHTML,/红花园事项/);assert.match(movingHTML,/紫樾润事项/);
+   for(const route of ['/moving','/moving.html'])assert.equal((await fetch(origin+route,{redirect:'manual'})).headers.get('location'),prefix+'/moving/');
+   for(const asset of ['moving.js','moving.css','assets/moving/cover.svg','assets/moving/cover-mobile.svg'])assert.equal((await fetch(origin+'/'+asset)).status,200);
    for(const asset of ['portal.js','portal.css','app.js','sw.js','assets/mobile/palace.svg',coverAsset])assert.equal((await fetch(origin+'/'+asset)).status,200);
    const image=await fetch(origin+'/'+coverAsset);assert.equal(image.headers.get('content-type'),'image/webp');assert.match(image.headers.get('cache-control'),/immutable/);
    const bytes=await image.arrayBuffer();assert.ok(bytes.byteLength>0&&bytes.byteLength<100000,'cover should stay below 100 KB');assert.equal(Number(image.headers.get('content-length')),bytes.byteLength);
@@ -38,8 +42,15 @@ async function run(){
  assert.equal((await put(data)).status,200);
  const latest={food:[{title:'最后一次保存',done:true}],place:[]};
  assert.equal((await put(latest)).status,200);
+ const movingData={food:[{title:'红花园打包',done:true,date:'2026-11-14',details:'厨房'}],place:[{title:'紫樾润收纳',done:false}]};
+ const movingEndpoint='http://127.0.0.1:31879/livenow/api/moving-journal';
+ assert.equal((await fetch(movingEndpoint,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:movingData})})).status,200);
+ assert.deepEqual((await (await fetch(endpoint+'/api/journal')).json()).data,latest);
  await stop();await start();
  const saved=await (await fetch(endpoint+'/api/journal')).json();assert.deepEqual(saved.data,latest);
+ assert.deepEqual((await (await fetch(movingEndpoint)).json()).data,movingData);
+ assert.deepEqual((await (await fetch('http://127.0.0.1:31879/moving/api/moving-journal')).json()).data,movingData);
+ assert.equal((await fetch(movingEndpoint,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:{food:[{title:'invalid'}],place:[]}})})).status,400);
  assert.equal((await put(data)).status,200);assert.ok(fs.existsSync(path.join(dir,'journal.json.bak')));
  console.log('PASS: routing, optimized WebP under 100 KB, immutable caching, ETag revalidation, file isolation, persistence, backup');
 }
