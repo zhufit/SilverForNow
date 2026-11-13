@@ -22,7 +22,7 @@ async function run(){
   await page.goto(origin+'/');
   await page.waitForFunction(()=>window.portalTabHost&&document.querySelectorAll('iframe').length===2&&[...document.querySelectorAll('iframe')].every(frame=>frame.contentDocument.querySelector('.sync-bar')));
   assert.deepEqual(await page.locator('.portal-header nav a').allTextContents(),['搬家','北京']);
-  assert.equal(await page.title(),'碎银换今朝');
+  assert.equal(await page.title(),'人生三万天');
   const moving=page.frames().find(frame=>frame.url().endsWith('/moving/'));
   const beijing=page.frames().find(frame=>frame.url().endsWith('/beijing/'));
   await page.locator('.portal-header nav a').nth(0).click();await page.waitForFunction(()=>portalTabHost.active()===1);
@@ -65,7 +65,7 @@ async function run(){
    await direct.goto(origin+'/'+tab+'/');await direct.waitForFunction(index=>window.portalTabHost?.active()===index,index);
    assert.equal(await direct.locator('#food .title').first().inputValue(),tab==='moving'?'原搬家记录':'原北京记录');
    await direct.locator('.portal-brand').click();await direct.waitForFunction(()=>portalTabHost.active()===0);
-   assert.equal(await direct.frameLocator('iframe[title="首页"]').locator('#portal-title').textContent(),'碎银换今朝');await direct.close();
+   assert.equal(await direct.frameLocator('iframe[title="首页"]').locator('#portal-title').textContent(),'人生三万天');await direct.close();
   }
   await page.evaluate(()=>navigator.serviceWorker.ready);await page.waitForFunction(()=>navigator.serviceWorker.controller);
   await context.setOffline(true);await page.goto(origin+'/beijing/');await page.waitForFunction(()=>window.portalTabHost?.active()===2);

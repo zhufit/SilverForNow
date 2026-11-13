@@ -8,7 +8,7 @@
   }else{
     const header=document.createElement('header');header.className='portal-header';
     const brand=document.createElement('a');brand.className='portal-brand';brand.href=pages[0].href;
-    brand.setAttribute('aria-label','碎银换今朝 · 返回首页封面');brand.title='返回首页封面';
+    brand.setAttribute('aria-label','人生三万天 · 返回首页封面');brand.title='返回首页封面';
     brand.innerHTML='<svg viewBox="0 0 32 32" width="30" height="30" fill="currentColor" aria-hidden="true" focusable="false"><path d="m7 10 9-4 3 10-8 5-5-5Z"/><path d="m22 11 5 3-2 7-5-3Z"/><path d="m13 25 5-4 5 4-6 3Z"/></svg>';
     const nav=document.createElement('nav');nav.setAttribute('aria-label','篇章导航');
     const links=[brand];
@@ -17,7 +17,7 @@
     const select=active=>{
       links.forEach((link,i)=>{if(i===active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
       header.style.color=active===0?'#526159':chapters[active-1].color||'#d8d0c3';
-      document.title=active===0?'碎银换今朝':pages[active].title+'篇 · 碎银换今朝';
+      document.title=active===0?'人生三万天':pages[active].title+'篇 · 人生三万天';
     };
     const boot=()=>{
       window.portalTabHost=createTabHost(pages,index,header,select);
