@@ -1,19 +1,68 @@
 # 碎银换今朝
 
-通用篇章门户。运行 `npm start`。部署后通过 `http://IP/livenow/` 访问首页，通过 `http://IP/livenow/beijing/` 打开北京篇；访问 `/livenow` 会自动补齐末尾斜杠。本地开发也支持 `/` 和 `/beijing/`。
+无构建步骤的多页应用，导航和左右滑动顺序统一为 **首页 → 搬家 → 北京**。运行环境为 Node.js 22 或更新版本。
 
-首页仅保留封面图、题字和透明导航，图片加载后淡入；系统开启减少动态效果时不播放动画。篇章导航统一配置在 `portal.js` 的 `chapters` 数组。新增篇章时，添加配置、对应的独立页面及服务端路由，并将页面和资源加入 Docker 镜像与离线缓存。
+## 运行与检查
 
-首页标题下方显示日数进度条及“第 9,765 天 / 30,000”。以北京时间 2026年11月13日为第 9,765 天，每过一个自然日自动递增；页面跨零点、重新打开或从后台恢复时均会更新，无需手动修改或服务端任务。进度条按实际天数 / 30,000 计算，填充上限为 100%。
+```sh
+npm start
+npm run check
+npm test
+```
 
-首页以米白纯色背景搭配蓝灰猫、狸花白猫的简约扁平插画，仅保留“碎银换今朝”标题。插画源文件为 `assets/home-cats.png`，采用透明背景，不包含人物、建筑、雪景或其他装饰。替换封面时使用新的内容指纹文件名并更新首页、离线缓存引用，保证长期缓存可安全更新。首页标题独立于图片加载显示，离线缓存注册延迟到页面加载完成后的空闲时间。
+本地地址：`http://127.0.0.1:3000/`、`/moving/`、`/beijing/`。Docker 部署继续使用 `/livenow/`、`/livenow/moving/`、`/livenow/beijing/`；省略末尾斜杠时自动跳转，旧的 `moving.html` 和 `beijing.html` 书签继续有效。
 
-移动端（宽度不超过 600px）通过 `<picture>` 使用 700×476 WebP（约 30 KB），桌面端使用 1100×748 WebP（约 57 KB）。插画完整等比显示，预加载使用相同屏幕条件，首屏无需同时下载两版图片。生成方式与提示词见 `assets/home-cats.prompt.md`，旧封面源文件保留作历史参考。
+浏览器回归：安装开发依赖 `npm install` 后运行 `npm run test:browser`。Windows 默认使用已安装的 Edge，也可通过 `BROWSER_PATH` 指定浏览器；其他环境可先运行 `npx playwright install chromium`。覆盖导航顺序、双向滑动、History、直接进入章节、编辑与日期、旧记录、数据隔离、离线缓存及首页跨零点更新。
 
-北京篇继续使用原有 `beijing-journal-v1` 本地存储和事项同步接口，已有数据无需迁移。后续篇章应使用独立的存储键和同步接口，避免混用北京事项。
+## 目录
 
-搬家篇位于 `/livenow/moving/`（本地也支持 `/moving/`），时间为 2026年11月14日 - 2026年11月17日，左侧为红花园事项，右侧为紫樾润事项。复用北京篇的事项编辑、日期、详情、完成标记及拖动排序，初始清单为空。采用独立的居家矢量插画、雾蓝与冰青冷色配色，搭配窗外暖阳及斜照的光束，无下雪效果。使用 `moving-journal-v1` / `moving-sync-v1` 本地存储、`api/moving-journal` 同步接口和 `moving-journal.json` 服务端文件；北京数据保持原样。桌面和手机使用各自构图的封面，事项背景随滚动依次切换打包、门口、新居和午后阳光场景。
+```text
+public/                         # 可对外提供的运行文件
+  pages/
+    home/                       # 首页：index.html、home.js、home.css、assets/
+    moving/                     # 搬家：index.html、config.js、theme.css、assets/
+    beijing/                    # 北京：index.html、config.js、theme.css、scenes.js、assets/
+  shared/
+    chapters.js                 # tab 顺序、名称、链接、导航色
+    navigation.js               # 公共导航和当前页状态
+    navigation.css
+    tab-host.js                 # 常驻页面、滑动过渡、历史记录
+    journal/                    # 公共事项、日期、排序、背景切换、同步及样式
+    precache.js                 # 自动生成的离线资源清单
+  sw.js                         # 离线缓存入口，保留根路径以兼容旧注册
+server/index.cjs                # HTTP 路由、数据保存、可选访问密码
+tests/                          # 服务端、交互逻辑和浏览器回归
+scripts/                        # 语法检查、离线清单和搬家插画生成
+design/home/                    # 猫咪封面源图、提示词及历史素材，不对外提供
+docker/                         # Node 与 Nginx 镜像、Compose 配置
+data/                           # 本地运行时数据，不提交；Docker 使用持久卷
+```
 
-移动端可左右滑动切换相邻导航页：首页左滑进入北京篇，北京篇右滑返回首页。透明度和模糊程度随手指距离实时变化，反向拖动可撤回，短距离松手会回退。页面在同源框架中常驻，切换通过 History API 更新地址，不重新加载章节，因此保留编辑与滚动状态。相邻章节在首屏加载完成后预热，未就绪时保留当前画面。纵向滚动、输入框、日期弹层和事项排序不触发切页。
+每个 tab 的页面、配置、主题及图片放在自己的目录内。事项通用逻辑只依赖 `window.journalConfig`，北京与搬家的内容、存储键、同步地址和场景配置在各自的 `config.js` 中。首页的图片加载和日数计算独立位于 `pages/home/home.js`。
 
-校验：`npm run check`、`node verify-server.cjs`、`node verify-drag.cjs`、`node verify-swipe.cjs`。
+公共资源路径通过页面的应用根地址解析，因此切换 tab 后仍支持根路径和 `/livenow/` 部署前缀。服务端只提供 `public/` 中的静态文件，不暴露服务端代码、测试、设计源文件或数据目录。所有页面均通过规范访问地址进入。
+
+## 页面与数据
+
+- 首页：米白底、蓝灰猫与狸花白猫的扁平插画，标题为“碎银换今朝”。桌面与手机使用带内容指纹的透明 WebP，分别约 57 KB 和 30 KB。标题下显示日数和进度：以北京时间 2026年11月13日为第 9,765 天，按自然日递增，跨零点、重新打开及后台恢复时更新，进度条上限为 30,000 天。
+- 搬家：2026年11月14日 - 2026年11月17日，左侧红花园事项、右侧紫樾润事项。雾蓝与冰青居家背景，搭配暖阳及斜照光束，无下雪效果。事项背景依次为打包、门口、新居和午后阳光。
+- 北京：保留原封面、冬日背景和下雪效果，以及美食与景点事项。
+
+两个事项页共用新增、编辑、详情、日期、完成标记、长按拖动排序及同步能力。页面在同源 iframe 中常驻，切换保留滚动、编辑和展开状态；输入、日期弹层及排序期间不会误触滑动切页。
+
+| 页面 | 本地存储 / 同步状态 | API | 服务端文件 |
+| --- | --- | --- | --- |
+| 搬家 | `moving-journal-v1` / `moving-sync-v1` | `/api/moving-journal` | `moving-journal.json` |
+| 北京 | `beijing-journal-v1` / `beijing-sync-v1` | `/api/journal` | `journal.json` |
+
+接口支持 `/livenow` 前缀，旧章节路径下的 API 也继续可用。存储键、文件名及数据结构不变，已有数据无需迁移。设置 `DATA_DIR` 可指定数据目录，`HOST` 和 `PORT` 可指定监听地址，`APP_PASSWORD` 可启用原有密码校验。Docker 中继续将持久卷挂载到 `/app/data`。
+
+## 修改页面与新增 tab
+
+1. 在 `public/pages/<id>/` 放入页面、配置、主题和资源；复用 `public/shared` 的导航与事项模块。
+2. 在 `public/shared/chapters.js` 中添加配置，数组顺序即导航及滑动顺序。
+3. 在 `server/index.cjs` 注册规范页面路由；需要事项同步时使用独立存储键、API 和服务端文件。
+4. 运行 `npm run cache` 更新离线资源清单，并递增 `public/sw.js` 的缓存版本。
+5. 运行语法检查与回归测试。Docker 自动复制 `public/` 和 `server/`，无需逐个维护新增资源文件名。
+
+修改搬家矢量插画后可运行 `npm run assets:moving`，从该页配置重新生成桌面与手机封面。修改首页图片时使用新的内容指纹文件名，同时更新首页引用和离线清单；生成提示词见 `design/home/home-cats.prompt.md`。

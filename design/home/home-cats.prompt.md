@@ -1,6 +1,6 @@
 # Minimal cats homepage illustration
 
-Generated with the built-in image_gen tool, using `assets/home-cover.png` as the identity reference. Source: `assets/home-cats.png`. Transparent WebP variants retain both complete cats and are displayed over a solid cream CSS background.
+Generated with the built-in image_gen tool, using `design/home/archive/home-cover.png` as the identity reference. Source: `design/home/home-cats.png`. Transparent WebP variants retain both complete cats and are displayed over a solid cream CSS background.
 
 Final prompt:
 

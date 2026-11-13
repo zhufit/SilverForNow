@@ -1,8 +1,8 @@
 let metricsDirty=true;
 function resizeTitle(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';metricsDirty=true}
 const journalConfig=window.journalConfig||{};
-const key=journalConfig.key||'beijing-journal-v1';
-const initial=journalConfig.initial||{food:['吃一顿热气腾腾的涮羊肉','去胡同里，找一碗炸酱面','尝尝刚出炉的北京烤鸭'],place:['等一场故宫的雪','登上景山，看一眼紫禁城','沿着什刹海，慢慢走']};
+const key=journalConfig.key;
+const initial=journalConfig.initial||{food:[],place:[]};
 let data=Object.fromEntries(Object.entries(initial).map(([k,v])=>[k,v.map(title=>({title,done:false}))]));
 const status=document.querySelector('#status');
 const backToTimeline=document.createElement('button');
@@ -12,7 +12,7 @@ backToTimeline.onclick=()=>document.getElementById('journey').scrollIntoView({be
 document.getElementById('journey').append(backToTimeline);
 document.querySelectorAll('[data-add]').forEach(button=>{
   button.textContent='+';
-  button.setAttribute('aria-label',journalConfig.addLabels?.[button.dataset.add]||(button.dataset.add==='food'?'新增美食':'新增景点'));
+  button.setAttribute('aria-label',journalConfig.addLabels?.[button.dataset.add]||'新增事项');
   button.title=button.getAttribute('aria-label');
 });
 function valid(d){return d&&['food','place'].every(k=>Array.isArray(d[k])&&d[k].length<=1000&&d[k].every(x=>x&&typeof x.title==='string'&&x.title.length<=200&&typeof x.done==='boolean'))}
@@ -131,12 +131,12 @@ backdrop.setAttribute('aria-hidden','true');
 backdrop.append(document.querySelector('.scene'));
 const sceneLayers=[];
 const scenesReady=document.createElement('script');
-scenesReady.src='./scenes.js';
+scenesReady.src=journalConfig.scenesSource||'';
 function loadScenes(scenes){
   scenes.forEach((scene,i)=>{
     const layer=document.createElement('div');
     layer.className='scenic-layer';
-    layer.dataset.scene=['hutong','lake','temple','wall'][i];
+    layer.dataset.scene=journalConfig.sceneNames?.[i]||String(i);
     layer.innerHTML=`<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="scene-sky-${i}" x2="0" y2="1"><stop stop-color="${scene.sky[0]}"/><stop offset="1" stop-color="${scene.sky[1]}"/></linearGradient></defs><path fill="url(#scene-sky-${i})" d="M0 0h1440v900H0z"/>${scene.art}</svg>`;
     backdrop.insertBefore(layer,backdrop.querySelector('.backdrop-snow,.backdrop-teal'));
     sceneLayers.push(layer);
@@ -144,15 +144,15 @@ function loadScenes(scenes){
   fitBackgrounds();
   scrollEffect();
 }
-scenesReady.onload=()=>loadScenes(window.beijingScenes);
-if(!journalConfig.scenes)document.head.append(scenesReady);
+scenesReady.onload=()=>loadScenes(window.journalScenes);
+if(journalConfig.scenesSource)document.head.append(scenesReady);
 for(const name of (journalConfig.snow===false?['teal','veil']:['snow','teal','veil'])){const layer=document.createElement('div');layer.className='backdrop-'+name;backdrop.append(layer)}
 document.body.prepend(backdrop);
 function fitBackgrounds(){
   const viewportHeight=backdrop.clientHeight||innerHeight;
   const portrait=innerWidth<=900&&viewportHeight>innerWidth;
   const svgs=[backdrop.querySelector('.scene'),...sceneLayers.map(layer=>layer.querySelector('svg'))];
-  const focalPoints=journalConfig.focalPoints||[1050,720,880,1010,900];
+  const focalPoints=journalConfig.focalPoints||[720,720,720,720,720];
   svgs.forEach((svg,i)=>{
     if(!svg)return;
     const baseHeight=i===0?800:900;

@@ -1,0 +1,12 @@
+.cover:before{background-image:linear-gradient(180deg,#24292575 0%,#24292547 65%,#24292500 100%),url('./cover.svg')}
+/* Portrait artwork is composed for phones, rather than cropped from desktop. */
+@media(max-width:900px) and (orientation:portrait){
+ .global-backdrop{background:#829594 url('./assets/mobile/palace.svg') center/cover no-repeat}
+ .global-backdrop>.scene,.scenic-layer svg{display:none}
+ .scenic-layer{background-position:center;background-size:cover;background-repeat:no-repeat}
+ .scenic-layer[data-scene=hutong]{background-image:url('./assets/mobile/hutong.svg')}
+ .scenic-layer[data-scene=lake]{background-image:url('./assets/mobile/lake.svg')}
+ .scenic-layer[data-scene=temple]{background-image:url('./assets/mobile/temple.svg')}
+ .scenic-layer[data-scene=wall]{background-image:url('./assets/mobile/wall.svg')}
+ .cover:before{background-image:linear-gradient(#24292545,#24292520),url('./assets/mobile/cover.svg');background-size:cover;background-position:center}
+}

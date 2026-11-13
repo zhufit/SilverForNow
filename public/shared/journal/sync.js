@@ -1,8 +1,8 @@
 // Browser-local edits remain usable when the shared server is unreachable.
 (()=>{
   if(location.protocol==='file:')return;
-  const metaKey=journalConfig.syncKey||'beijing-sync-v1';
-  const endpoint=journalConfig.endpoint||'./api/journal';
+  const metaKey=journalConfig.syncKey;
+  const endpoint=journalConfig.endpoint;
   let meta={dirty:false},busy=false,timer,edit=0;
   try{meta=Object.assign(meta,JSON.parse(localStorage.getItem(metaKey)||'{}'))}catch{}
   const bar=document.createElement('div');bar.className='sync-bar';

@@ -1,10 +1,10 @@
 /* Mist blue interiors with pale sunshine and cool, clear interface accents. */
 :root{--paper:#e5eff5;--ink:#f1f7fc;--red:#96c6e1;--teal:#96cdd8;--line:#d9e9f454;--timeline-red:#a5c9e4;--palace-gold:#dfedf7}
 .moving-chapter{background:#789bb4}
-.moving-chapter .cover:before{background-image:linear-gradient(180deg,#1d405933,#1d40591f 65%,#1d405900),url('./assets/moving/cover.svg')}
+.moving-chapter .cover:before{background-image:linear-gradient(180deg,#1d405933,#1d40591f 65%,#1d405900),url('./assets/cover.svg')}
 .moving-chapter .cover-content,.moving-chapter .cover-date{color:#f3f8fd}
 .moving-chapter .global-backdrop{background:#809fb3}
-.moving-chapter .global-backdrop>.scene{display:block;left:0;width:100%;background:url('./assets/moving/cover.svg') center/cover no-repeat}
+.moving-chapter .global-backdrop>.scene{display:block;left:0;width:100%;background:url('./assets/cover.svg') center/cover no-repeat}
 .moving-chapter .global-backdrop>.scene>path{display:none}
 .moving-chapter .scenic-layer{background-image:none}
 .moving-chapter .scenic-layer svg{display:block}
@@ -36,8 +36,8 @@
 .moving-chapter .calendar-panel :focus-visible{outline-color:#587e9d}
 .moving-chapter .card.drag-ghost{background:#365a76e8;border-color:#a5c9e480}
 @media(max-width:900px) and (orientation:portrait){
- .moving-chapter .global-backdrop>.scene{background-image:url('./assets/moving/cover-mobile.svg')}
- .moving-chapter .cover:before{background-image:linear-gradient(#1d405933,#1d40591a),url('./assets/moving/cover-mobile.svg')}
+ .moving-chapter .global-backdrop>.scene{background-image:url('./assets/cover-mobile.svg')}
+ .moving-chapter .cover:before{background-image:linear-gradient(#1d405933,#1d40591a),url('./assets/cover-mobile.svg')}
  .moving-chapter .scenic-layer svg{display:block}
  .moving-chapter .lane-title h2,.moving-chapter .lane:last-child .lane-title h2{font-size:clamp(19px,5.7vw,26px);letter-spacing:0}
 }

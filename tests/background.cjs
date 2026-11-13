@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const source=fs.readFileSync('app.js','utf8');
+const source=fs.readFileSync('public/shared/journal/journal.js','utf8');
 const fn=source.slice(source.indexOf('function eventBackgroundProgress('),source.indexOf('let layoutMetrics='));
 const context={};vm.createContext(context);vm.runInContext(fn,context);
 const parent={offsetTop:800,offsetParent:null};

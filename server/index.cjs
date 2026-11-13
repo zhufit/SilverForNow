@@ -2,7 +2,8 @@ const http=require('node:http');
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
-const root=__dirname;
+const root=path.resolve(__dirname,'..');
+const publicRoot=path.join(root,'public');
 const password=process.env.APP_PASSWORD;
 const storage=path.resolve(process.env.DATA_DIR||path.join(root,'data'));
 fs.mkdirSync(storage,{recursive:true});
@@ -16,7 +17,8 @@ const sessions=new Map(),attempts=new Map();
 function valid(data){return data&&['food','place'].every(k=>Array.isArray(data[k])&&data[k].length<=1000&&data[k].every(x=>x&&typeof x.title==='string'&&x.title.length<=200&&typeof x.done==='boolean'&&(x.date===undefined||typeof x.date==='string'&&(!x.date||/^\d{4}-\d{2}-\d{2}$/.test(x.date)))&&(x.details===undefined||typeof x.details==='string'&&x.details.length<=4000)))}
 for(const {state} of journals.values())if(state.data!==null&&!valid(state.data))throw Error('Invalid journal file; restore a backup before starting.');
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'};
-const allowed=new Set(['index.html','beijing.html','moving.html','moving.css','moving.js','portal.css','portal.js','style.css','background.css','app.js','drag.js','calendar.js','sync.js','scenes.js','cover.svg','sw.js']);
+const pages={'/':'pages/home/index.html','/index.html':'pages/home/index.html','/moving/':'pages/moving/index.html','/beijing/':'pages/beijing/index.html'};
+const publicTypes=new Set(['.css','.js','.svg','.png','.webp']);
 function json(res,status,value){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value))}
 function read(req){return new Promise((resolve,reject)=>{let bytes=0,chunks=[];req.on('data',chunk=>{bytes+=chunk.length;if(bytes>12000000){reject(Error('too large'));req.destroy()}else chunks.push(chunk)});req.on('end',()=>{try{resolve(JSON.parse(Buffer.concat(chunks).toString()))}catch{reject(Error('invalid JSON'))}});req.on('error',reject)})}
 function samePassword(input){const hash=v=>crypto.createHash('sha256').update(v).digest();return typeof input==='string'&&crypto.timingSafeEqual(hash(input),hash(password))}
@@ -30,7 +32,8 @@ const server=http.createServer(async(req,res)=>{
     if(prefix)url.pathname=url.pathname.slice(prefix.length);
     const chapter=url.pathname.match(/^\/(beijing|moving)(?:\/|$|\.html$)/)?.[1];
     if(chapter&&(url.pathname==='/'+chapter||url.pathname==='/'+chapter+'.html')){res.writeHead(308,{Location:prefix+'/'+chapter+'/'});return res.end()}
-    if(chapter)url.pathname=url.pathname.slice(chapter.length+1);
+    // Preserve chapter-scoped API URLs and previously registered service workers.
+    if(chapter&&(url.pathname.startsWith('/'+chapter+'/api/')||url.pathname==='/'+chapter+'/sw.js'))url.pathname=url.pathname.slice(chapter.length+1);
     // Keep the chapter's relative asset base canonical.
     if(url.pathname.startsWith('/api/')){
       // All mutation requests come from our same-origin JSON client.
@@ -60,11 +63,13 @@ const server=http.createServer(async(req,res)=>{
       return json(res,404,{error:'not found'});
     }
     if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'method'});
-    let name=decodeURIComponent(url.pathname).replace(/^\//,'')||'index.html';
-    if(chapter&&name==='index.html')name=chapter+'.html';
-    const fingerprinted=/^assets\/home-cover(?:-mobile)?\.[a-f0-9]{10}\.webp$/.test(name);
-    if(!allowed.has(name)&&!fingerprinted&&!['assets/home-cover.svg','assets/home-cover.png'].includes(name)&&!/^assets\/mobile\/(cover|palace|hutong|lake|temple|wall)\.svg$/.test(name)&&!/^assets\/moving\/cover(?:-mobile)?\.svg$/.test(name))return json(res,404,{error:'not found'});
-    const target=path.join(root,name);if(!fs.existsSync(target))return json(res,404,{error:'not found'});
+    const requested=decodeURIComponent(url.pathname);
+    const name=pages[requested]||requested.replace(/^\//,'');
+    const fingerprinted=/^pages\/home\/assets\/home-cover(?:-mobile)?\.[a-f0-9]{10}\.webp$/.test(name);
+    // Serve only the public tree. Server, tests, sources and data stay private.
+    if(!pages[requested]&&!publicTypes.has(path.extname(name)))return json(res,404,{error:'not found'});
+    const target=path.resolve(publicRoot,name);
+    if(name.includes('\0')||!target.startsWith(publicRoot+path.sep)||!fs.existsSync(target)||!fs.statSync(target).isFile())return json(res,404,{error:'not found'});
     const stat=fs.statSync(target),etag=`W/"${stat.size}-${stat.mtimeMs}"`;
     const headers={'Content-Type':mime[path.extname(name)]||'application/octet-stream','Cache-Control':fingerprinted?'public, max-age=31536000, immutable':'no-cache','ETag':etag};
     if(req.headers['if-none-match']===etag){res.writeHead(304,headers);return res.end()}

@@ -1,6 +1,6 @@
 Mobile homepage cover
 
-Generated with the built-in image_gen tool using assets/home-cover.png as the style and subject reference. Final optimized asset: assets/home-cover-mobile.63d20eccfb.webp (910×1729).
+Generated with the built-in image_gen tool using design/home/archive/home-cover.png as the style and subject reference. Final optimized asset: public/pages/home/assets/home-cover-mobile.63d20eccfb.webp (910×1729).
 
 Final prompt:
 

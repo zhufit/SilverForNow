@@ -1,12 +1,3 @@
-.portal-header{height:auto;min-height:76px;position:sticky;top:0;z-index:30;padding:12px max(6vw,20px);display:flex;flex-wrap:nowrap;gap:20px;align-items:center;justify-content:flex-start;background:transparent;color:#d8d0c3;border:0;backdrop-filter:none}
-.portal-brand{display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;color:inherit;border-radius:50%}
-.portal-brand svg{display:block}
-.portal-header nav{display:flex;gap:8px;max-width:100%;overflow-x:auto;font-size:14px}
-.portal-header nav a{display:block;padding:10px 12px;white-space:nowrap;color:inherit;opacity:.7;border-bottom:1px solid transparent}
-.portal-header nav a[aria-current]{opacity:1;border-bottom-color:currentColor}
-.portal-header nav a:hover,.portal-brand:hover{opacity:1;color:#b89862}
-.portal-header a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
-.tab-frame{position:fixed;inset:0;display:block;width:100%;height:100%;border:0;z-index:1;background:#dce2e9;visibility:hidden;pointer-events:none}
 .portal-home{margin:0;background:#f1eee6;color:#526159;font:15px/1.65 system-ui,-apple-system,"Microsoft YaHei",sans-serif}
 .portal-home *{box-sizing:border-box}
 .portal-home a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
@@ -39,9 +30,6 @@
 @keyframes cover-words{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes guide-swipe{0%,100%{transform:translateX(0);opacity:.8}50%{transform:translateX(-7px);opacity:1}}
 @media(max-width:600px){
-  .portal-header{min-height:65px;padding:10px 18px;gap:12px}
-  .portal-header nav{gap:4px;font-size:14px}
-  .portal-header nav a{padding:10px 12px}
   .portal-intro{min-height:0;height:100svh}
   .portal-intro h1{font-size:clamp(30px,8.5vw,40px);letter-spacing:.16em;line-height:1.65;text-shadow:none}
   .home-cover-copy{inset:23% 0 auto;padding:0 20px}

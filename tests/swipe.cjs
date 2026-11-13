@@ -1,12 +1,12 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const source=fs.readFileSync('portal.js','utf8').split('(()=>{')[0];
+const source=fs.readFileSync('public/shared/tab-host.js','utf8').split('(()=>{')[0];
 function setup(index=0){
   const handlers={},windowHandlers={},previews=[],releases=[];
   const state={sorting:false,editing:false,calendar:false,busy:false,active:index};
   const view={defaultView:{innerWidth:390,addEventListener:(type,fn)=>windowHandlers[type]=fn},body:{classList:{contains:()=>state.sorting}},querySelector:()=>state.calendar,activeElement:{matches:()=>state.editing},addEventListener:(type,fn)=>handlers[type]=fn};
   const host={busy:()=>state.busy,active:()=>state.active,preview:(next,progress)=>previews.push({next,progress}),release:commit=>releases.push(commit)};
   const context={};vm.createContext(context);vm.runInContext(source,context);
-  context.bindTabSwipe(['home','beijing','next'],index,view,host);
+  context.bindTabSwipe(['home','moving','beijing'],index,view,host);
   function event(type,x,y=200,options={}){
     const touch={identifier:1,clientX:x,clientY:y};
     const e={target:{closest:()=>!!options.control},touches:type==='touchend'?[]:[touch],changedTouches:[touch],cancelable:true,prevented:false,preventDefault(){this.prevented=true},...options};

@@ -4,7 +4,7 @@ const handlers={};
 const title={addEventListener:(k,f)=>handlers[k]=f,focus:()=>focused++,setSelectionRange:()=>{},value:'a',setAttribute:()=>{}};
 const context={document:{activeElement:null,getElementById:()=>({})},window:{scrollBy:o=>scrolled+=o.top},setTimeout:f=>(pending=f,1),clearTimeout:()=>pending=null,cancelAnimationFrame:()=>{}};
 vm.createContext(context);
-vm.runInContext(fs.readFileSync('drag.js','utf8'),context);
+vm.runInContext(fs.readFileSync('public/shared/journal/drag.js','utf8'),context);
 context.bindDrag(title,{},'food',{});
 const touch=y=>({identifier:1,clientX:20,clientY:y});
 let prevented=0;

@@ -1,0 +1,7 @@
+.git
+.task-tools
+node_modules
+data
+tests
+design
+.env
